@@ -12,8 +12,9 @@ class NaiveBayesClassifier():
     def train(self, X, y):
         self.trained = True
         # We will store both the probabilities of the labels and attribute probabilities given the label in dictionaries
-        self.PAC = dict.fromkeys(np.unique(y))
-        self.PC = dict.fromkeys(np.unique(y))
+        y_unique=np.unique(y)
+        self.PAC = dict.fromkeys(y_unique)
+        self.PC = dict.fromkeys(y_unique)
         N = len(y)
         
         for c in self.PC:
@@ -139,11 +140,11 @@ class LogisticRegressionMiniBatch:
         probabilities = []
         if len(example.shape) == 1:
             example = np.array([example])
+        if self.normalization:
+            example = (example - self.mean) / self.std
         for row in example:
             # Normalize using the stored mean and standard deviation, and add the column with 1s (w_0) by reshaping
             # the data from the example.
-            if self.normalization:
-                row = (row - self.mean) / self.std
             row = row.reshape(1, -1)
             row = np.concatenate((np.ones((row.shape[0], 1)), row), axis=1)
             row = row.reshape(-1)
@@ -196,8 +197,9 @@ class RL_OvR:
 #Simple function that can be used to calculate the performance of any of the previous models
 def performance(model, X, y):
     hit, miss= 0, 0
+    classification=model.clasifica(X)
     for row in range(0,len(X)):
-        if(model.clasifica(X)[row]==y[row]):
+        if(classification[row]==y[row]):
            hit+=1
         else:
            miss+=1
